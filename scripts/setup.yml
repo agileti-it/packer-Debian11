@@ -49,6 +49,40 @@
       regexp: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet"'
       line: 'GRUB_CMDLINE_LINUX_DEFAULT=""'
       state: present
+      
+  - name: Disable IPv6 with sysctl
+    sysctl: name={{ item }} value=1 state=present reload=yes
+    with_items:
+      - net.ipv6.conf.all.disable_ipv6
+      - net.ipv6.conf.default.disable_ipv6
+      - net.ipv6.conf.lo.disable_ipv6
+
+  - name: stop service
+    service:
+      name: apparmor
+      state: stopped
+    failed_when: false
+    tags:
+      - configuration
+      - apparmor
+
+  - name: remove service
+    service:
+      name: apparmor
+      enabled: false
+    failed_when: false
+    tags:
+      - configuration
+      - apparmor
+
+  - name: remove package
+    apt:
+      name: apparmor
+      state: absent
+      purge: true
+    tags:
+      - configuration
+      - apparmor
 
   - name: Update grub2
     command: update-grub2
@@ -57,6 +91,12 @@
     apt:
       update_cache: yes
       upgrade: dist
+      
+  - name: Set authorized keys taken from url
+    ansible.posix.authorized_key:
+    user: packer
+    state: present
+    key: https://agileticonf.s3.eu-west-2.amazonaws.com/packer_rsa.pub
 
   - name: Install packages
     apt:
@@ -67,6 +107,7 @@
       - bash-completion
       - ccze
       - curl
+      - openssl
       - git
       - net-tools
       - rsync
@@ -74,45 +115,9 @@
       - tcpdump
       - vim
       - wget
-
-  - name: Install dependencies for VirtualBox Guest Additions
-    apt:
-      name: "{{ packages }}"
-      state: latest
-    vars:
-      packages:
-      - dkms
-      - make
-      - "linux-headers-{{ ansible_kernel }}"
-    when:
-      - ansible_virtualization_type == "virtualbox"
-
-  - name: Mount VBoxGuestAdditions.iso
-    mount:
-      path: /mnt
-      src: /home/packer/VBoxGuestAdditions.iso
-      fstype: iso9660
-      opts: ro,loop
-      state: mounted
-    when: ansible_virtualization_type == "virtualbox"
-
-  - name: Install VBoxGuestAdditions.iso
-    command: sh /mnt/VBoxLinuxAdditions.run
-    register: vbox_result
-    failed_when: "'Running kernel modules will not be replaced until \nthe system is restarted' not in vbox_result.stdout"
-    when: ansible_virtualization_type == "virtualbox"
-
-  - name: Umount VBoxGuestAdditions.iso
-    mount:
-      path: /mnt
-      state: absent
-    when: ansible_virtualization_type == "virtualbox"
-
-  - name: Delete VBoxGuestAdditions.iso
-    file:
-      path: /home/packer/VBoxGuestAdditions.iso
-      state: absent
-    when: ansible_virtualization_type == "virtualbox"
+      - htop
+      - ntp
+      - sudo
 
   - name: Install open-vm-tools
     apt:
