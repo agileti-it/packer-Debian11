@@ -22,6 +22,7 @@
         "boot_wait": "{{ user `boot_wait` }}",
         "disk_size": "{{ user `disk_size` }}",
         "disk_type_id": "thin",
+        "disk_adapter_type": "pvscsi",
         "format": "ovf",
         "tools_upload_flavor": "linux",
 		    "headless": false,
@@ -40,7 +41,7 @@
         "vmx_data": {
           "memsize": "{{ user `memsize` }}",
           "numvcpus": "{{ user `numvcpus` }}",
-          "virtualHW.version": "14",
+          "virtualHW.version": "19",
           "ethernet0.networkName": "VM Network"
         },
 				"remote_type": "esx5",
@@ -52,27 +53,6 @@
 				"vnc_disable_password": true,
 				"vnc_over_websocket": true,
 				"insecure_connection": true
-      },
-      {
-        "type": "virtualbox-iso",
-        "boot_command": ["<esc>auto preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<enter>"],
-        "boot_wait": "{{ user `boot_wait` }}",
-        "disk_size": "{{ user `disk_size` }}",
-        "headless": false,
-        "guest_os_type": "Debian_64",
-        "http_directory": "http",
-        "iso_checksum": "{{ user `iso_checksum` }}",
-        "iso_url": "{{ user `iso_url` }}",
-        "shutdown_command": "echo 'packer'|sudo -S shutdown -P now",
-        "ssh_password": "{{ user `ssh_password` }}",
-        "ssh_port": 22,
-        "ssh_username": "{{ user `ssh_username` }}",
-        "ssh_timeout": "30m",
-        "vm_name": "{{ user `vm_name` }}",
-        "vboxmanage": [
-          ["modifyvm", "{{.Name}}", "--memory", "{{ user `memsize` }}"],
-          ["modifyvm", "{{.Name}}", "--cpus", "{{ user `numvcpus` }}"]
-        ]
       }
   ],
   "provisioners": [
