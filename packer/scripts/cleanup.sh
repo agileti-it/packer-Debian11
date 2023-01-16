@@ -2,6 +2,7 @@
 
 pip3 uninstall -y ansible
 
+apt -y purge build-essential 
 apt -y autoremove --purge
 apt-get clean
 

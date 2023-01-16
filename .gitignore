@@ -8,3 +8,4 @@ output-vmware-iso/
 .DS_Store
 
 **/.terraform/*
+packer/*-base/*

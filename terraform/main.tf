@@ -21,15 +21,17 @@ provider "esxi" {
 
 resource "esxi_guest" "vmtest" {
 	guest_name	= "vmtest"
-	guestos		= "debian1064"
+	guestos		= "debian11-64"
 	disk_store	= "datastore1"
 	memsize		= "4096"
 	numvcpus	= "4"
-	boot_disk_size	= "17"
+	boot_disk_size	= "16"
 
 	clone_from_vm	= "debian-11-amd64"
 
 	network_interfaces {
-    		virtual_network = "VM Network"
-  	}
+  	virtual_network = "VM Network"
+  	nic_type = "vmxnet3"
+  }
+
 }

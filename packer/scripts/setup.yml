@@ -36,12 +36,12 @@
       marker: ""
       state: present
 
-  - name: Enable root SSH login
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: "^PermitRootLogin"
-      line: "PermitRootLogin yes"
-      state: present
+#  - name: Enable root SSH login
+#    lineinfile:
+#      path: /etc/ssh/sshd_config
+#      regexp: "^PermitRootLogin"
+#      line: "PermitRootLogin yes"
+#      state: present
 
   - name: Disable quiet boot mode
     lineinfile:
@@ -94,9 +94,9 @@
       
   - name: Set authorized keys taken from url
     ansible.posix.authorized_key:
-    user: packer
-    state: present
-    key: https://agileticonf.s3.eu-west-2.amazonaws.com/packer_rsa.pub
+      user: packer
+      state: present
+      key: https://agileticonf.s3.eu-west-2.amazonaws.com/packer_rsa.pub
 
   - name: Install packages
     apt:
@@ -104,8 +104,6 @@
       state: latest
     vars:
       packages:
-      - bash-completion
-      - ccze
       - curl
       - openssl
       - git
